@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:app": "nodemon api/index.js",
+    "start:app": "nodemon src/index.js",
     "start:database": "docker compose up -d",
     "stop:database": "docker compose down",
     "generate-secret-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""

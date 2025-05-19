@@ -5,7 +5,7 @@ import db from '../models/index.js';
 const registerUser = async (userData) => {
     const { username, password, email } = userData;
 
-    const existingUser = await db.users.findOne({ email });
+    const existingUser = await db.users.findOne({ where: { email } });
     if (existingUser) {
         throw { code: 11000 };
     }

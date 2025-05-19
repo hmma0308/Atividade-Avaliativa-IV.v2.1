@@ -5,63 +5,19 @@ import db from '../models/index.js';
 const registerUser = async (userData) => {
     const { username, password, email } = userData;
 
-    // Start a transaction to ensure data consistency
-    const transaction = await db.sequelize.transaction();
-
-    try {
-        // 1. Check for existing user (case-insensitive search)
-        const existingUser = await db.users.findOne({
-            where: {
-                email: db.sequelize.where(
-                    db.sequelize.fn('LOWER', db.sequelize.col('email')),
-                    db.sequelize.fn('LOWER', email)
-                )
-            },
-            transaction
-        });
-
-        if (existingUser) {
-            await transaction.rollback();
-            throw {
-                code: 'EMAIL_EXISTS',
-                message: 'Email already registered'
-            };
-        }
-
-        // 2. Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // 3. Create user (email stored in lowercase)
-        const newUser = await db.users.create({
-            username,
-            password: hashedPassword,
-            email: email.toLowerCase() // Normalize to lowercase
-        }, { transaction });
-
-        // Commit the transaction
-        await transaction.commit();
-        
-        return newUser;
-
-    } catch (error) {
-        // Rollback transaction on error
-        await transaction.rollback();
-
-        // Handle PostgreSQL unique violation error (code 23505)
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            throw {
-                code: 'EMAIL_EXISTS',
-                message: 'Email already registered'
-            };
-        }
-
-        console.error('Registration error:', error);
-        throw {
-            code: 'REGISTRATION_FAILED',
-            message: 'Could not complete registration'
-        };
+    const existingUser = await db.users.findOne({ email });
+    if (existingUser) {
+        throw { code: 11000 };
     }
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    return await db.users.create({
+        username,
+        password: hashedPassword,
+        email
+    });
 };
 
 const login = async (credentials) => {

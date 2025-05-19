@@ -25,7 +25,12 @@ const getAllTasks = async (req, res) => {
 
 const getTaskById = async (req, res) => {
     try {
-        const task = await taskService.getUserTask(req.userId, req.params.id);
+        const taskId = parseInt(req.params.id, 10);
+        if (isNaN(taskId)) {
+            return res.status(400).json({ message: 'Task ID must be a number' });
+        }
+
+        const task = await taskService.getUserTask(req.userId, taskId);
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
@@ -38,9 +43,14 @@ const getTaskById = async (req, res) => {
 
 const updateTask = async (req, res) => {
     try {
+        const taskId = parseInt(req.params.id, 10);
+        if (isNaN(taskId)) {
+            return res.status(400).json({ message: 'Task ID must be a number' });
+        }
+
         const updatedTask = await taskService.updateUserTask(
             req.userId,
-            req.params.id,
+            taskId,
             req.body
         );
         if (!updatedTask) {
@@ -55,7 +65,12 @@ const updateTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
     try {
-        const success = await taskService.deleteUserTask(req.userId, req.params.id);
+        const taskId = parseInt(req.params.id, 10);
+        if (isNaN(taskId)) {
+            return res.status(400).json({ message: 'Task ID must be a number' });
+        }
+
+        const success = await taskService.deleteUserTask(req.userId, taskId);
         if (!success) {
             return res.status(404).json({ message: 'Task not found' });
         }

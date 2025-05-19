@@ -17,10 +17,12 @@ db.sequelize.sync()
 const app = express();
 app.use(express.json());
 
+const cors = require('cors');
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://effective-guide-9r4pxjr6gxr2x675-5173.app.github.dev'
+    'https://effective-guide-9r4pxjr6gxr2x675-5173.app.github.dev',
+    'https://atividade-avaliativa-iv-final.vercel.app'
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],

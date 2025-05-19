@@ -2,6 +2,7 @@ import dbConfig from '../config/db.config.js';
 import { Sequelize } from 'sequelize';
 import User from './User.js';
 import pg from 'pg';
+import Task from './Task.js';
 
 const sequelize = process.env.DATABASE_URL
     ? new Sequelize(process.env.DATABASE_URL, {
@@ -47,5 +48,9 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.users = User(sequelize, Sequelize);
+db.tasks = Task(sequelize, Sequelize);
+
+db.users.hasMany(db.tasks, { foreignKey: 'userId' });
+db.tasks.belongsTo(db.users, { foreignKey: 'userId' });
 
 export default db;

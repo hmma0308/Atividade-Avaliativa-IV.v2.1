@@ -4,6 +4,7 @@ import userRoute from './routes/user.routes.js'
 import exampleRoute from './routes/example.routes.js';
 import taskRoute from './routes/task.routes.js';
 import swaggerRoute from './routes/swagger.route.js';
+import cors from 'cors';
 
 db.sequelize.sync()
     .then(() => {
@@ -15,17 +16,21 @@ db.sequelize.sync()
 
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://effective-guide-9r4pxjr6gxr2x675-5173.app.github.dev'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 app.use('/users', userRoute);
 app.use("/secureExampleRoute", exampleRoute);
 app.use('/tasks', taskRoute);
 app.use(swaggerRoute);
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
 
 app.get('/', (req, res) => {
     res.send({message: 'Hello World!'});
